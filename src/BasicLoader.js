@@ -23,7 +23,10 @@ function BasicLoader(props) {
           })}
         </tbody>
       </table>
-      <FormControls page={props.page} handleClick={props.onPage}/>
+      <FormControls 
+        page={props.page} 
+        handleClick={props.onPage}
+        preventNext={props.preventNext}/>
     </section>
   )
 }

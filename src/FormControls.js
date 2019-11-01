@@ -17,7 +17,11 @@ function FormControls(props) {
             </span>
         }
         <span className="current-page">{props.page}</span>
-        <button onClick={() => props.handleClick(1)} className="page-button">&gt;</button>
+        {props.preventNext ? 
+          <span className="page-button">&gt;</span>
+        :
+          <button onClick={() => props.handleClick(1)} className="page-button">&gt;</button>
+        }
       </span>
   )
 }

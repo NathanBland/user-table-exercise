@@ -6,6 +6,10 @@ import FormControls from "./FormControls"
 import ErrorTable from "./ErrorTable"
 
 import API from "./utils/API";
+// Since Api is axios, leverage cancel tokens
+// https://github.com/axios/axios#cancellation
+import axios from "axios"
+const CancelToken = axios.CancelToken;
 
 class UserTable extends React.Component {
   constructor(props) {
@@ -17,10 +21,9 @@ class UserTable extends React.Component {
       hasError: false,
       page: 1,
       limit: 5,
-      error: {},
       searchText: '',
-      queuedRequests: 0,
-      typingTimeout: 0
+      cancelToken: null,
+      typingTimeout: 0,
     };
   }
   
@@ -30,32 +33,35 @@ class UserTable extends React.Component {
   }
 
   fetchTableData = async () => {
-    const currentText = this.state.searchText
+    // check for a cancel token, if we have one, cancel.
+    if (this.state.cancelToken) {
+      this.state.cancelToken('new request')
+    }
+    // build our newer request
+    const source = CancelToken.source();
+    this.setState({
+      cancelToken: source.cancel
+    })
+    const currentRequest = API.get(this.buildQueryString(), {
+      cancelToken: source.token 
+    })
+
     this.setState({
       isLoading: true,
       hasError: false,
-      queuedRequests: this.state.queuedRequests + 1,
-      error: {}
+      users: [],
     })
     try {
-      const usersData = await API.get(this.buildQueryString());
-      // Because of the "finally" block we must await the state change
-      await this.setState({
+      const usersData = await currentRequest;
+      this.setState({
         users: usersData.data,
-        queuedRequests: this.state.queuedRequests - 1
+        isLoading: false
       });
-    } catch (error) {
-      // Because of the "finally" block we must await the state change
-      await this.setState({
-        hasError: true,
-        queuedRequests: this.state.queuedRequests - 1,
-        error
-      })
-    } finally {
-      // In the event that our search query has changed before our request resolved
-      // Do not set loading to be complete.
-      if (this.state.searchText === currentText && this.state.queuedRequests < 1) {
+    } catch (err) {
+      if (err.message === 'new request') {
+      } else {
         this.setState({
+          hasError: true,
           isLoading: false
         })
       }
@@ -66,12 +72,12 @@ class UserTable extends React.Component {
     this.fetchTableData()
   }
 
-  handleSearch = (ev) => {
+  handleSearch = async (ev) => {
     // Create a debounce function to remove some network stack.
     if (this.state.typingTimeout) {
       clearTimeout(this.state.typingTimeout)
     }
-    this.setState({
+    await this.setState({
       isLoading: true,
       page: 1,
       searchText: ev.target.value
@@ -83,7 +89,9 @@ class UserTable extends React.Component {
       typingTimeout: requestTimeout
     })
   }
-
+  shouldPreventNext = () => {
+    return this.state.isLoading || (this.state.users.length < this.state.limit)
+  }
 
   handlePageChange = async (modifier) => {
     const page = this.state.page + modifier
@@ -107,6 +115,7 @@ class UserTable extends React.Component {
               page={this.state.page} 
               limit={this.state.limit} 
               onPage={this.handlePageChange}
+              preventNext={this.shouldPreventNext()}
             />
           :
             this.state.hasError 
@@ -116,6 +125,7 @@ class UserTable extends React.Component {
                 limit={this.state.limit}
                 onRetry={this.fetchTableData}
                 onPage={this.handlePageChange}
+                preventNext={this.shouldPreventNext()}
               />
             :
             <section className="UserTable--with-headers">
@@ -127,19 +137,27 @@ class UserTable extends React.Component {
                   </tr>
                 </thead>
                 <tbody>
-                  {this.state.users.map((user) => {
-                    return (
-                      <tr key={user.id}>
+                  {this.state.users.length < 1 
+                  ?
+                    <tr>
+                      <td colSpan="2">No Results. Try a searching for a different name.</td>
+                    </tr>
+                  :
+                    this.state.users.map((user) => {
+                      return (
+                        <tr key={user.id}>
                         <td className="table-row--full-name">{user.name}</td>
                         <td className="table-row--email">{user.email}</td>
-                      </tr>
-                    );
-                  })}
+                        </tr>
+                        );
+                      })
+                  }
                 </tbody>
               </table>
               <FormControls 
                 page={this.state.page} 
                 handleClick={this.handlePageChange}
+                preventNext={this.shouldPreventNext()}
               />
             </section>
         }
