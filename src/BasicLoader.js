@@ -4,7 +4,7 @@ import FormControls from "./FormControls"
 function BasicLoader(props) {
   const loadingArray = [...Array(props.limit).fill(0)]
   return (
-    <section className="UserTable--with-controls">
+    <section className="UserTable--with-headers loading">
       <table border="0">
         <thead>
           <tr>

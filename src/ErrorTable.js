@@ -1,11 +1,10 @@
 import React from "react"
 import "./BasicLoader.css"
-// import 
 import FormControls from "./FormControls"
 function BasicLoader(props) {
   const loadingArray = [...Array(props.limit - 2).fill(0)]
   return (
-    <section className="UserTable--with-controls">
+    <section className="UserTable--with-headers hasErrors">
       <table border="0">
         <thead>
           <tr>

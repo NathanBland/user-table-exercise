@@ -8,19 +8,19 @@ function FormControls(props) {
           ?
             <button 
               onClick={() => props.handleClick(-1)} 
-              className="page-button">
+              className="page-button previous">
                 &lt;
             </button>
           :
-            <span className="page-button">
+            <span className="page-button previous">
               &lt;
             </span>
         }
         <span className="current-page">{props.page}</span>
         {props.preventNext ? 
-          <span className="page-button">&gt;</span>
+          <span className="page-button next">&gt;</span>
         :
-          <button onClick={() => props.handleClick(1)} className="page-button">&gt;</button>
+          <button onClick={() => props.handleClick(1)} className="page-button next">&gt;</button>
         }
       </span>
   )
