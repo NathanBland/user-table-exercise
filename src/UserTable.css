@@ -1,3 +1,78 @@
 .UserTable table {
   margin: 0 auto;
+  min-width: 50vw;
+  border: none;
+  box-shadow: 0px 0px 2px #d1d1d1;
+}
+.UserTable--with-headers {
+  position: relative;
+  display: flex;
+  flex-flow: column nowrap;
+  align-items: center;
+}
+.UserTable thead {
+  border: none;
+  background-color: #1b88dd;
+}
+.UserTable thead th {
+  /* border: 1px solid #1b88dd; */
+  background-color: #1b88dd;
+  color: white;
+}
+.UserTable tr {
+  display: flex;
+  border: none;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  transition: background 200ms linear;
+}
+.UserTable tr:nth-child(2n) {
+  border: none;
+  background-color: lightgrey;
+}
+.UserTable tr:nth-child(2n + 1) {
+  border: none;
+  background-color: white;
+}
+.UserTable tr:hover {
+  border: none;
+  background-color: grey;
+}
+.UserTable thead > tr:nth-child(1) {
+  border: none;
+  background-color: #1b88dd;
+}
+.UserTable td, .UserTable th {
+  border: none;
+  padding: 1em;
+  flex: 1;
+  margin: 0;
+}
+.UserTable .table-row--full-name {
+  text-align: right;
+  margin-right: .5em;
+}
+.UserTable .table-row--email {
+  text-align: left;
+  margin-left: .5em;
+}
+.UserTable tbody > .error {
+  background-color: white;
+}
+.UserTable tbody > .error:hover {
+  background-color: white;
+}
+.button--error {
+  background-color: red;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 1em;
+  padding: .25em 1em;
+  cursor: pointer;
+  box-shadow: 0px 0px 2px grey;
+}
+.button--error:hover {
+  box-shadow: 0px 0px 4px grey;
 }
