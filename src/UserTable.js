@@ -96,7 +96,10 @@ class UserTable extends React.Component {
   render() {
     return (
       <div className="UserTable">
-        <input type="text" onChange={this.handleSearch} value={this.state.searchText}/>
+        <div className="user-search">
+          <label className="user-search--label">Search By Name:</label>
+          <input className="user-search--input" type="text" onChange={this.handleSearch} value={this.state.searchText} placeholder="Tony Stark"/>
+        </div>
         {
           this.state.isLoading 
           ? 
